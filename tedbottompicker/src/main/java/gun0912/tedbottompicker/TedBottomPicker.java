@@ -270,6 +270,9 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
           case GalleryAdapter.PickerTile.GALLERY:
             startGalleryIntent();
             break;
+          case GalleryAdapter.PickerTile.PDF:
+            startPDFIntent();
+            break;
           case GalleryAdapter.PickerTile.IMAGE:
             complete(new MediaPickerEntity(pickerTile.getImageUri()).setType(
                 MediaPickerEntity.MEDIA_TYPE.PICKER));
@@ -528,6 +531,29 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
         .startActivityForResult();
   }
 
+  private void startPDFIntent() {
+    Intent pdfIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    pdfIntent.setType("application/pdf");
+    pdfIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+    if (pdfIntent.resolveActivity(getActivity().getPackageManager()) == null) {
+      errorMessage("This Application do not have Necessary Application");
+      return;
+    }
+
+    TedOnActivityResult.with(getActivity())
+        .setIntent(pdfIntent)
+        .setListener(new OnActivityResultListener() {
+          @Override
+          public void onActivityResult(int resultCode, Intent data) {
+            if (resultCode == Activity.RESULT_OK) {
+              onActivityResultGallery(data);
+            }
+          }
+        })
+        .startActivityForResult();
+  }
+
   private void errorMessage() {
     errorMessage(null);
   }
@@ -594,6 +620,19 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
     complete(new MediaPickerEntity(uri).setType(MediaPickerEntity.MEDIA_TYPE.GALLERY));
   }
 
+  private void onActivityResultPDF(Intent data) {
+    Uri uri = data.getData();
+
+    if (uri == null) {
+      errorMessage();
+    }
+
+    final ContentResolver resolver = Objects.requireNonNull(getContext()).getContentResolver();
+    resolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+    complete(new MediaPickerEntity(uri).setType(MediaPickerEntity.MEDIA_TYPE.PDF));
+  }
+
   public interface OnMultiImageSelectedListener {
     void onImagesSelected(ArrayList<MediaPickerEntity> selectedUris);
   }
@@ -618,6 +657,7 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
     public Drawable cameraTileDrawable;
     public Drawable captureVideoTileDrawable;
     public Drawable galleryTileDrawable;
+    public Drawable pdfTileDrawable;
 
     public Drawable deSelectIconDrawable;
     public Drawable selectedForegroundDrawable;
@@ -632,10 +672,12 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
     public boolean showGallery = true;
     public boolean showVideoCapture = true;
     public boolean showVideoMedia = true;
+    public boolean showPDF = true;
     public int peekHeight = -1;
     public int cameraTileBackgroundResId = R.color.tedbottompicker_camera;
     public int captureVideoTileBackgroundResId = R.color.tedbottompicker_camera;
     public int galleryTileBackgroundResId = R.color.tedbottompicker_gallery;
+    public int pdfTileBackgroundResId = R.color.tedbottompicker_gallery;
 
     public String title;
     public boolean showTitle = true;
@@ -665,6 +707,7 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
       setCameraTile(R.drawable.baseline_photo_camera_white_36);
       setGalleryTile(R.drawable.baseline_collections_white_36);
       setCaptureVideoTile(R.drawable.baseline_videocam_white_48);
+      setPDFTile(R.drawable.baseline_collections_white_36);
       setSpacingResId(R.dimen.tedbottompicker_grid_layout_margin);
     }
 
@@ -675,6 +718,11 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
 
     public Builder setGalleryTile(@DrawableRes int galleryTileResId) {
       setGalleryTile(ContextCompat.getDrawable(context, galleryTileResId));
+      return this;
+    }
+
+    public Builder setPDFTile(@DrawableRes int pdfTileResId) {
+      setPDFTile(ContextCompat.getDrawable(context, pdfTileResId));
       return this;
     }
 
@@ -713,6 +761,11 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
 
     public Builder setGalleryTile(Drawable galleryTileDrawable) {
       this.galleryTileDrawable = galleryTileDrawable;
+      return this;
+    }
+
+    public Builder setPDFTile(Drawable pdfTileDrawable) {
+      this.pdfTileDrawable = pdfTileDrawable;
       return this;
     }
 
@@ -942,10 +995,11 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MediaType.IMAGE, MediaType.VIDEO})
+    @IntDef({MediaType.IMAGE, MediaType.VIDEO, MediaType.PDF })
     public @interface MediaType {
       int IMAGE = 1;
       int VIDEO = 2;
+      int PDF = 3;
     }
   }
 }

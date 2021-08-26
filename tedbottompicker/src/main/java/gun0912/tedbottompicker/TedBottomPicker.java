@@ -672,7 +672,7 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
     public boolean showGallery = true;
     public boolean showVideoCapture = true;
     public boolean showVideoMedia = true;
-    public boolean showPDF = true;
+    public boolean showPDFPicker = false;
     public int peekHeight = -1;
     public int cameraTileBackgroundResId = R.color.tedbottompicker_camera;
     public int captureVideoTileBackgroundResId = R.color.tedbottompicker_camera;
@@ -756,6 +756,11 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
 
     public Builder setShowVideoCapture(boolean showVideoCapture) {
       this.showVideoCapture = showVideoCapture;
+      return this;
+    }
+
+    public Builder setShowPDFPicker(boolean showPDFPicker) {
+      this.showPDFPicker = showPDFPicker;
       return this;
     }
 

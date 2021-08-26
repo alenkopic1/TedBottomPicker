@@ -64,7 +64,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     if (builder.showGallery) {
       pickerTiles.add(new PickerTile(PickerTile.GALLERY));
     }
-    if (builder.showPDF) {
+    if (builder.showPDFPicker) {
       pickerTiles.add(new PickerTile(PickerTile.PDF));
     }
 

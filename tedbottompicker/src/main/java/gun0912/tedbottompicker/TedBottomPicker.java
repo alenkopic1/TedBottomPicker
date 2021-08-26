@@ -547,7 +547,7 @@ public class TedBottomPicker extends BottomSheetDialogFragment {
           @Override
           public void onActivityResult(int resultCode, Intent data) {
             if (resultCode == Activity.RESULT_OK) {
-              onActivityResultGallery(data);
+              onActivityResultPDF(data);
             }
           }
         })
